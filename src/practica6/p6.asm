@@ -5,8 +5,8 @@ global _start
 
 _start:                   
 
-    call getch
-    call itoa
+    ;call getch
+    ;call itoa
     mov edx,ncad
     call puts
 
@@ -35,6 +35,7 @@ _start:
     call puts
 
     mov eax,1
+    xor ebx, ebx
     int 0x80
 
 
