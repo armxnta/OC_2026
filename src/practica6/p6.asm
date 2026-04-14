@@ -5,8 +5,8 @@ global _start
 
 _start:                   
 
-    ;call getch
-    ;call itoa
+    call getch
+    call itoa
     mov edx,ncad
     call puts
 
@@ -26,6 +26,13 @@ _start:
     call putchar
     call puts
 
+    mov al,[nlin]
+    call putchar
+
+    mov eax, 1
+    xor ebx, ebx
+    int 0x80
+
     ; minusculas
     mov edx,cad
     call minusculas
@@ -44,12 +51,19 @@ _start:
         push cx
         mov cx,bx
         dec cx
+        mov edi, edx
 
     .ciclo: 
         call getch
         cmp al,127
         jne .guardar
+        
+        cmp edx, edi
+        je .ciclo
+
         call borrar
+        dec edx
+        inc cx
         jmp .ciclo
 
     .guardar:
