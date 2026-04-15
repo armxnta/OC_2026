@@ -26,12 +26,6 @@ _start:
     call putchar
     call puts
 
-    mov al,[nlin]
-    call putchar
-
-    mov eax, 1
-    xor ebx, ebx
-    int 0x80
 
     ; minusculas
     mov edx,cad
@@ -44,7 +38,6 @@ _start:
     mov eax,1
     xor ebx, ebx
     int 0x80
-
 
     capturar:
         push edx

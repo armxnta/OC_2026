@@ -9,8 +9,8 @@ _start:
     call puts
 
     mov ebx, msg
-    mov esi, 19
-    mov byte [ebx + esi*1], '%'
+    mov esi, 6
+    mov byte [ebx + esi*3+1], '%'
 
     mov edx, msg
     call puts
