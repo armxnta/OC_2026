@@ -1,6 +1,6 @@
 section .data
 
-    mensajeEntrada db "Ingrese un numero: ",0
+    mensajeEntrada db "Ingresar un numero: ",0
     mensajeResultado db "Resultado convertido: ",0
     salto db 10
 
@@ -15,14 +15,14 @@ section .text
 
 _start:
 
-    ; Mostrar mensaje
+    ;mostrar mensaje
     mov eax, 4
     mov ebx, 1
     mov ecx, mensajeEntrada
     mov edx, 20
     int 80h
 
-    ; Leer entrada
+    ;leer entrada
     mov eax, 3
     mov ebx, 0
     mov ecx, bufferEntrada
@@ -30,51 +30,45 @@ _start:
     int 80h
 
     ;atoi
-
     mov esi, bufferEntrada
     call atoi
 
     mov [numero], eax
 
     ;itoa
-
     mov eax, [numero]
     mov edi, bufferSalida
     call itoa
 
-    ; Mostrar texto resultado
+    ;mostrar resultado
     mov eax, 4
     mov ebx, 1
     mov ecx, mensajeResultado
     mov edx, 22
     int 80h
 
-    ; Mostrar numero convertido
+    ;numero convertido
     mov eax, 4
     mov ebx, 1
     mov ecx, bufferSalida
     mov edx, 64
     int 80h
 
-    ; Salto linea
     mov eax, 4
     mov ebx, 1
     mov ecx, salto
     mov edx, 1
     int 80h
 
-    ; Finalizar
     mov eax, 1
     xor ebx, ebx
     int 80h
 
 atoi:
-
     xor eax, eax
     xor ebx, ebx
 
 ignorar_espacios:
-
     mov cl, [esi]
 
     cmp cl, ' '
@@ -86,12 +80,10 @@ ignorar_espacios:
     jmp revisar_signo
 
 avanzar:
-
     inc esi
     jmp ignorar_espacios
 
 revisar_signo:
-
     mov cl, [esi]
 
     cmp cl, '-'
@@ -102,14 +94,12 @@ revisar_signo:
     jmp convertir
 
 revisar_positivo:
-
     cmp cl, '+'
     jne convertir
 
     inc esi
 
 convertir:
-
     mov cl, [esi]
 
     cmp cl, '0'
@@ -129,17 +119,15 @@ convertir:
     jmp convertir
 
 terminar_atoi:
-
     cmp bl, 1
-    jne regresar_atoi
+    jne return
 
     neg eax
 
-regresar_atoi:
+return:
     ret
 
 itoa:
-
     mov ebx, 10
     xor ecx, ecx
 
@@ -152,8 +140,7 @@ itoa:
 
 iniciar_conversion:
 
-division_loop:
-
+division:
     xor edx, edx
     div ebx
 
@@ -163,10 +150,9 @@ division_loop:
     inc ecx
 
     cmp eax, 0
-    jne division_loop
+    jne division
 
 escribir_digitos:
-
     pop eax
     mov [edi], al
 
