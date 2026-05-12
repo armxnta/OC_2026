@@ -145,7 +145,6 @@ division:
     div ebx
 
     add edx, '0'
-
     push edx
     inc ecx
 
