@@ -154,3 +154,101 @@ next_i:
     jl outer_loop
 
     ret
+
+
+atoi:
+    xor eax, eax
+    xor ebx, ebx
+
+ignorar_espacios:
+    mov cl, [esi]
+
+    cmp cl, ' '
+    je avanzar
+
+    cmp cl, 9
+    je avanzar
+
+    jmp revisar_signo
+
+avanzar:
+    inc esi
+    jmp ignorar_espacios
+
+revisar_signo:
+    mov cl, [esi]
+
+    cmp cl, '-'
+    jne revisar_positivo
+
+    mov bl, 1
+    inc esi
+    jmp convertir
+
+revisar_positivo:
+    cmp cl, '+'
+    jne convertir
+
+    inc esi
+
+convertir:
+    mov cl, [esi]
+
+    cmp cl, '0'
+    jb terminar_atoi
+
+    cmp cl, '9'
+    ja terminar_atoi
+
+    sub cl, '0'
+
+    imul eax, eax, 10
+
+    movzx ecx, cl
+    add eax, ecx
+
+    inc esi
+    jmp convertir
+
+terminar_atoi:
+    cmp bl, 1
+    jne return
+
+    neg eax
+
+return:
+    ret
+
+itoa:
+    mov ebx, 10
+    xor ecx, ecx
+
+    cmp eax, 0
+    jge iniciar_conversion
+
+    mov byte [edi], '-'
+    inc edi
+    neg eax
+
+iniciar_conversion:
+
+division:
+    xor edx, edx
+    div ebx
+
+    add edx, '0'
+    push edx
+    inc ecx
+
+    cmp eax, 0
+    jne division
+
+escribir_digitos:
+    pop eax
+    mov [edi], al
+
+    inc edi
+    loop escribir_digitos
+    mov byte [edi], 0
+
+    ret
