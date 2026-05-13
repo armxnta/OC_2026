@@ -4,7 +4,7 @@ section .data
     msgOriginal db "Arreglo original",10,0
     msgSorted db "Arreglo ordenado",10,0
     newline db 10
-    espacio db " ", 0
+    espacio db " ",0
 
 section .bss
 
@@ -21,6 +21,7 @@ _start:
     mov ecx, 5
     call capturar_arreglo
 
+    ; Mostrar arreglo original
     mov eax, 4
     mov ebx, 1
     mov ecx, msgOriginal
@@ -31,10 +32,12 @@ _start:
     mov ecx, 5
     call mostrar_arreglo
 
+    ; Ordenar arreglo
     mov esi, arreglo
     mov ecx, 5
     call ordenar_arreglo
 
+    ; Mostrar arreglo ordenado
     mov eax, 4
     mov ebx, 1
     mov ecx, msgSorted
@@ -45,6 +48,7 @@ _start:
     mov ecx, 5
     call mostrar_arreglo
 
+    ; Salir
     mov eax, 1
     xor ebx, ebx
     int 80h
@@ -55,72 +59,69 @@ capturar_arreglo:
 
 loop_capturar:
 
-    push edi
-    mov edi, inputBuffer
-    mov ecx, 64  
-    xor al, al
-    rep stosb
-    pop edi
-
+    ; Mostrar mensaje
     mov eax, 4
     mov ebx, 1
     mov ecx, msgInput
     mov edx, 17
     int 80h
 
+    ; Leer entrada
     mov eax, 3
     mov ebx, 0
     mov ecx, inputBuffer
     mov edx, 64
     int 80h
 
+    ; Convertir ASCII a entero
     mov esi, inputBuffer
     call atoi
 
+    ; Guardar número
     mov [arreglo + edi*4], eax
 
     inc edi
-
     cmp edi, 5
     jl loop_capturar
 
     ret
 
 mostrar_arreglo:
-    xor esi, esi          ;indice en 0
+
+    xor esi, esi
 
 loop_mostrar:
+
     mov eax, [arreglo + esi*4]
 
-    mov edi, outputBuffer 
-    mov ebx, edi         
-    push esi              
-    call itoa
-    
+    mov edi, outputBuffer
 
-    ;longitud = EDI - EBX 
+    push edi ;guardar inicio
+    call itoa
+    pop ebx ;restaurar inicio
+
+    ; Calcular longitud
     mov edx, edi
-    sub edx, ebx          ; EDX guarda longitud
-    
-    ;imprimir numero
+    sub edx, ebx
+
+    ; Imprimir número
     mov eax, 4
     mov ebx, 1
     mov ecx, outputBuffer
     int 80h
 
-    ;imprimir espacio
+    ; Imprimir espacio
     mov eax, 4
     mov ebx, 1
     mov ecx, espacio
     mov edx, 1
     int 80h
 
-    pop esi               ;restaurar indice
     inc esi
     cmp esi, 5
     jl loop_mostrar
 
-    ;salto de linea
+    ; Salto de línea
     mov eax, 4
     mov ebx, 1
     mov ecx, newline
@@ -177,10 +178,12 @@ next_i:
     ret
 
 atoi:
+
     xor eax, eax
     xor ebx, ebx
 
 ignorar_espacios:
+
     mov cl, [esi]
 
     cmp cl, ' '
@@ -192,10 +195,12 @@ ignorar_espacios:
     jmp revisar_signo
 
 avanzar:
+
     inc esi
     jmp ignorar_espacios
 
 revisar_signo:
+
     mov cl, [esi]
 
     cmp cl, '-'
@@ -206,12 +211,14 @@ revisar_signo:
     jmp convertir
 
 revisar_positivo:
+
     cmp cl, '+'
     jne convertir
 
     inc esi
 
 convertir:
+
     mov cl, [esi]
 
     cmp cl, '0'
@@ -231,16 +238,22 @@ convertir:
     jmp convertir
 
 terminar_atoi:
+
     cmp bl, 1
-    jne return
+    jne return_atoi
 
     neg eax
 
-return:
+return_atoi:
     ret
 
 
 itoa:
+
+    push ebx
+    push ecx
+    push edx
+
     mov ebx, 10
     xor ecx, ecx
 
@@ -254,10 +267,12 @@ itoa:
 iniciar_conversion:
 
 division:
+
     xor edx, edx
     div ebx
 
     add edx, '0'
+
     push edx
     inc ecx
 
@@ -265,11 +280,18 @@ division:
     jne division
 
 escribir_digitos:
+
     pop eax
     mov [edi], al
 
     inc edi
+
     loop escribir_digitos
+
     mov byte [edi], 0
+
+    pop edx
+    pop ecx
+    pop ebx
 
     ret
