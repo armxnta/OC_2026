@@ -86,13 +86,12 @@ loop_mostrar:
 
     mov eax, [arreglo + edi*4]
 
-    ;mov esi, outputBuffer 
-    ;push edi              ; guarda indice
-    ;call itoa
-    ;pop edi               ; restaura indice
-
-    lea edi, [outputBuffer]
+    mov esi, outputBuffer 
+    push edi              ; guarda indice
     call itoa
+    pop edi               ; restaura indice
+
+    
 
     mov eax, 4
     mov ebx, 1
