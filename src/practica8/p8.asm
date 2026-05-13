@@ -1,14 +1,21 @@
 section .data
 
-    msgInput db "Ingrese numero: ",0
-    msgOriginal db "Arreglo original",10,0
-    msgSorted db "Arreglo ordenado",10,0
+    msgInput db "Ingrese numero: "
+    lenInput equ $-msgInput
+
+    msgOriginal db 10,"Arreglo original",10
+    lenOriginal equ $-msgOriginal
+
+    msgSorted db 10,"Arreglo ordenado",10
+    lenSorted equ $-msgSorted
+
     newline db 10
 
 section .bss
 
     arreglo resd 5
-    inputBuffer resb 64
+
+    inputBuffer  resb 64
     outputBuffer resb 64
 
 section .text
@@ -16,33 +23,33 @@ section .text
 
 _start:
 
-    mov esi, arreglo
-    mov ecx, 5
     call capturar_arreglo
+
+    ; Mostrar original
 
     mov eax, 4
     mov ebx, 1
     mov ecx, msgOriginal
-    mov edx, 17
+    mov edx, lenOriginal
     int 80h
 
-    mov esi, arreglo
-    mov ecx, 5
     call mostrar_arreglo
 
-    mov esi, arreglo
-    mov ecx, 5
+    ; Ordenar
+
     call ordenar_arreglo
+
+    ; Mostrar ordenado
 
     mov eax, 4
     mov ebx, 1
     mov ecx, msgSorted
-    mov edx, 18
+    mov edx, lenSorted
     int 80h
 
-    mov esi, arreglo
-    mov ecx, 5
     call mostrar_arreglo
+
+    ; Salir
 
     mov eax, 1
     xor ebx, ebx
@@ -50,15 +57,22 @@ _start:
 
 capturar_arreglo:
 
-    xor edi, edi
+    xor esi, esi
 
 capture_loop:
+
+    cmp esi, 5
+    jge end_capture
+
+    ; Mostrar mensaje
 
     mov eax, 4
     mov ebx, 1
     mov ecx, msgInput
-    mov edx, 17
+    mov edx, lenInput
     int 80h
+
+    ; Leer entrada
 
     mov eax, 3
     mov ebx, 0
@@ -66,34 +80,63 @@ capture_loop:
     mov edx, 64
     int 80h
 
-    mov esi, inputBuffer
+    ; ASCII -> entero
+
+    mov edi, inputBuffer
     call atoi
 
-    mov [arreglo + edi*4], eax
+    ; Guardar entero
 
-    inc edi
+    mov [arreglo + esi*4], eax
 
-    cmp edi, 5
-    jl capture_loop
+    inc esi
+    jmp capture_loop
 
+end_capture:
     ret
 
 mostrar_arreglo:
 
-    xor edi, edi
+    xor esi, esi
 
 show_loop:
 
-    mov eax, [arreglo + edi*4]
+    cmp esi, 5
+    jge end_show
 
-    mov esi, outputBuffer
+    ; Obtener entero
+
+    mov eax, [arreglo + esi*4]
+
+    ; Convertir entero -> ASCII
+
+    mov edi, outputBuffer
     call itoa
+
+    ; Calcular longitud
+
+    mov edi, outputBuffer
+    xor edx, edx
+
+count_length:
+
+    cmp byte [edi], 0
+    je print_number
+
+    inc edi
+    inc edx
+    jmp count_length
+
+print_number:
+
+    ; Imprimir número
 
     mov eax, 4
     mov ebx, 1
     mov ecx, outputBuffer
-    mov edx, 64
     int 80h
+
+    ; Salto línea
 
     mov eax, 4
     mov ebx, 1
@@ -101,58 +144,60 @@ show_loop:
     mov edx, 1
     int 80h
 
-    inc edi
+    inc esi
+    jmp show_loop
 
-    cmp edi, 5
-    jl show_loop
-
+end_show:
     ret
 
 ordenar_arreglo:
 
-    mov edi, 0
+    xor esi, esi
 
 outer_loop:
 
-    mov ebx, edi
-    mov edx, edi
-    inc edx
+    cmp esi, 4
+    jge end_sort
+
+    mov ebx, esi
+
+    mov edi, esi
+    inc edi
 
 inner_loop:
 
-    cmp edx, 5
+    cmp edi, 5
     jge swap_check
 
-    mov eax, [arreglo + edx*4]
+    mov eax, [arreglo + edi*4]
 
     cmp eax, [arreglo + ebx*4]
     jge continue_loop
 
-    mov ebx, edx
+    mov ebx, edi
 
 continue_loop:
 
-    inc edx
+    inc edi
     jmp inner_loop
 
 swap_check:
 
-    cmp ebx, edi
+    cmp ebx, esi
     je next_i
 
-    mov eax, [arreglo + edi*4]
-    mov ecx, [arreglo + ebx*4]
+    mov eax, [arreglo + esi*4]
+    mov edx, [arreglo + ebx*4]
 
-    mov [arreglo + edi*4], ecx
+    mov [arreglo + esi*4], edx
     mov [arreglo + ebx*4], eax
 
 next_i:
 
-    inc edi
+    inc esi
+    jmp outer_loop
 
-    cmp edi, 4
-    jl outer_loop
-
+end_sort:
     ret
 
 
