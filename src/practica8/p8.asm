@@ -220,6 +220,11 @@ return:
     ret
 
 itoa:
+
+    push ebx
+    push ecx
+    push edx
+
     mov ebx, 10
     xor ecx, ecx
 
@@ -233,6 +238,7 @@ itoa:
 iniciar_conversion:
 
 division:
+
     xor edx, edx
     div ebx
 
@@ -244,11 +250,17 @@ division:
     jne division
 
 escribir_digitos:
+
     pop eax
     mov [edi], al
 
     inc edi
     loop escribir_digitos
+
     mov byte [edi], 0
+
+    pop edx
+    pop ecx
+    pop ebx
 
     ret
