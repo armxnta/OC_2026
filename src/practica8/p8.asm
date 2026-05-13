@@ -4,6 +4,7 @@ section .data
     msgOriginal db "Arreglo original",10,0
     msgSorted db "Arreglo ordenado",10,0
     newline db 10
+    espacio db " ", 0
 
 section .bss
 
@@ -79,33 +80,45 @@ loop_capturar:
     ret
 
 mostrar_arreglo:
-
-    xor esi, esi          
+    xor esi, esi          ;indice en 0
 
 loop_mostrar:
-
-    mov eax, [arreglo + esi*4] 
+    mov eax, [arreglo + esi*4]
 
     mov edi, outputBuffer 
-    push esi              ; guarda indice
+    mov ebx, edi         
+    push esi              
     call itoa
-    pop esi               ; restaura indice
+    
 
+    ;longitud = EDI - EBX 
+    mov edx, edi
+    sub edx, ebx          ; EDX guarda longitud
+    
+    ;imprimir numero
     mov eax, 4
     mov ebx, 1
     mov ecx, outputBuffer
-    mov edx, 64
     int 80h
 
+    ;imprimir espacio
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, espacio
+    mov edx, 1
+    int 80h
+
+    pop esi               ;restaurar indice
+    inc esi
+    cmp esi, 5
+    jl loop_mostrar
+
+    ;salto de linea
     mov eax, 4
     mov ebx, 1
     mov ecx, newline
     mov edx, 1
     int 80h
-
-    inc esi              
-    cmp esi, 5            
-    jl loop_mostrar
 
     ret
 
