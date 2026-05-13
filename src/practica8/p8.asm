@@ -80,18 +80,16 @@ loop_capturar:
 
 mostrar_arreglo:
 
-    xor edi, edi          ; indice = 0
+    xor esi, esi          ; CAMBIO: Usamos esi como indice (indice = 0)
 
 loop_mostrar:
 
-    mov eax, [arreglo + edi*4]
+    mov eax, [arreglo + esi*4] ; CAMBIO: leemos usando esi
 
-    mov esi, outputBuffer 
-    push edi              ; guarda indice
+    mov edi, outputBuffer ; CAMBIO: itoa espera el buffer destino en edi, no en esi
+    push esi              ; guarda indice
     call itoa
-    pop edi               ; restaura indice
-
-    
+    pop esi               ; restaura indice
 
     mov eax, 4
     mov ebx, 1
@@ -105,8 +103,8 @@ loop_mostrar:
     mov edx, 1
     int 80h
 
-    inc edi
-    cmp edi, 5
+    inc esi               ; CAMBIO: incrementamos esi
+    cmp esi, 5            ; CAMBIO: comparamos esi
     jl loop_mostrar
 
     ret
