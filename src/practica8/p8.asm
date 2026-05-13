@@ -86,10 +86,13 @@ loop_mostrar:
 
     mov eax, [arreglo + edi*4]
 
-    mov esi, outputBuffer 
-    push edi              ; guarda indice
+    ;mov esi, outputBuffer 
+    ;push edi              ; guarda indice
+    ;call itoa
+    ;pop edi               ; restaura indice
+
+    lea edi, [outputBuffer]
     call itoa
-    pop edi               ; restaura indice
 
     mov eax, 4
     mov ebx, 1
@@ -219,12 +222,8 @@ terminar_atoi:
 return:
     ret
 
+
 itoa:
-
-    push ebx
-    push ecx
-    push edx
-
     mov ebx, 10
     xor ecx, ecx
 
@@ -238,7 +237,6 @@ itoa:
 iniciar_conversion:
 
 division:
-
     xor edx, edx
     div ebx
 
@@ -250,17 +248,11 @@ division:
     jne division
 
 escribir_digitos:
-
     pop eax
     mov [edi], al
 
     inc edi
     loop escribir_digitos
-
     mov byte [edi], 0
-
-    pop edx
-    pop ecx
-    pop ebx
 
     ret
