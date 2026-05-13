@@ -55,6 +55,13 @@ capturar_arreglo:
 
 loop_capturar:
 
+    push edi
+    mov edi, inputBuffer
+    mov ecx, 64  
+    xor al, al
+    rep stosb
+    pop edi
+
     mov eax, 4
     mov ebx, 1
     mov ecx, msgInput
