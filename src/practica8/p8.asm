@@ -52,7 +52,7 @@ capturar_arreglo:
 
     xor edi, edi
 
-capture_loop:
+loop_capturar:
 
     mov eax, 4
     mov ebx, 1
@@ -74,20 +74,22 @@ capture_loop:
     inc edi
 
     cmp edi, 5
-    jl capture_loop
+    jl loop_capturar
 
     ret
 
 mostrar_arreglo:
 
-    xor edi, edi
+    xor edi, edi          ; indice = 0
 
-show_loop:
+loop_mostrar:
 
     mov eax, [arreglo + edi*4]
 
-    mov edi, outputBuffer
+    mov esi, outputBuffer 
+    push edi              ; guarda indice
     call itoa
+    pop edi               ; restaura indice
 
     mov eax, 4
     mov ebx, 1
@@ -102,9 +104,8 @@ show_loop:
     int 80h
 
     inc edi
-
     cmp edi, 5
-    jl show_loop
+    jl loop_mostrar
 
     ret
 
@@ -121,21 +122,21 @@ outer_loop:
 inner_loop:
 
     cmp edx, 5
-    jge swap_check
+    jge check_cambio
 
     mov eax, [arreglo + edx*4]
 
     cmp eax, [arreglo + ebx*4]
-    jge continue_loop
+    jge continuar
 
     mov ebx, edx
 
-continue_loop:
+continuar:
 
     inc edx
     jmp inner_loop
 
-swap_check:
+check_cambio:
 
     cmp ebx, edi
     je next_i
@@ -154,7 +155,6 @@ next_i:
     jl outer_loop
 
     ret
-
 
 atoi:
     xor eax, eax
