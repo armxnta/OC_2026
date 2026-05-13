@@ -23,7 +23,7 @@ _start:
     mov eax, 4
     mov ebx, 1
     mov ecx, msgOriginal
-    mov edx, 18
+    mov edx, 17
     int 80h
 
     mov esi, arreglo
@@ -86,7 +86,7 @@ show_loop:
 
     mov eax, [arreglo + edi*4]
 
-    mov edi, outputBuffer
+    mov esi, outputBuffer
     call itoa
 
     mov eax, 4
@@ -218,6 +218,7 @@ terminar_atoi:
 
 return:
     ret
+
 
 itoa:
     mov ebx, 10
